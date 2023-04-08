@@ -1,0 +1,44 @@
+version : "3.7"
+
+services:
+  database:
+    image: mariadb:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_DATABASE=evote
+      - MYSQL_USER=evote
+      - MYSQL_PASSWORD=123
+      - TZ=Europe/Paris
+    ports:
+      - "3306:3306"
+    hostname: database
+    command: ["--event-scheduler=ON"]
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "evote", "-p123"]
+      interval: 10s
+      timeout: 2s
+      retries: 3
+
+  scrutateur:
+    image: "ghcr.io/sae-dacs-s4/scrutateur:latest"
+    hostname: scrutateur
+    volumes:
+      - .:/app
+    ports:
+      - "5057:5057"
+
+  systeme:
+    image: "ghcr.io/sae-dacs-s4/systeme:latest"
+    environment:
+      - TZ=Europe/Paris
+    volumes:
+      - .:/app
+    ports:
+      - "5056:5056"
+    depends_on:
+      scrutateur:
+        condition: service_started
+      database:
+          condition: service_healthy
+
+
