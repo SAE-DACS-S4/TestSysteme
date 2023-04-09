@@ -13,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.Thread.sleep;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class testSysteme {
@@ -37,12 +38,16 @@ public class testSysteme {
                     outputStream.write(buffer, 0, bytesRead);
                 }
             }
+            ProcessBuilder pull = new ProcessBuilder("docker-compose", "-f", tempFile.getAbsolutePath(), "pull");
+            pull.inheritIO();
+            Process pullProcess = pull.start();
+            pullProcess.waitFor();
             ProcessBuilder processBuilder = new ProcessBuilder("docker-compose", "-f", tempFile.getAbsolutePath(), "up", "-d");
             processBuilder.inheritIO();
             Process process = processBuilder.start();
             process.waitFor();
             assertTrue(process.exitValue() == 0);
-
+            sleep(1000);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

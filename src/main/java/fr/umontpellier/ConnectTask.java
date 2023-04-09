@@ -9,6 +9,8 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.lang.Thread.sleep;
+
 
 public class ConnectTask implements Runnable {
     private String host = "localhost";
@@ -40,7 +42,7 @@ public class ConnectTask implements Runnable {
             SSLSocketFactory sslSocketFactory = createCustomSSLSocketFactory();
             SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port);
             sslSocket.startHandshake();
-            sslSocket.addHandshakeCompletedListener(event -> successCounter.incrementAndGet());
+            successCounter.incrementAndGet();
             sslSocket.close();
         } catch (Exception e) {
             // Handle connection errors or failures here
