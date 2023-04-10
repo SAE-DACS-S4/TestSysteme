@@ -52,6 +52,9 @@ public class LoginTask extends ConnectTask {
             System.out.println("Login envoyé");
             String line = ois.readUTF();
             System.out.println("serveur: " + line);
+            if(line.equals("connexionauthorise")){
+                super.incrementAndGet();
+            }
         } catch (IOException e) {
             System.out.println("EOF error");
         }

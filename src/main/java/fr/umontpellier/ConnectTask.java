@@ -42,10 +42,14 @@ public class ConnectTask implements Runnable {
             SSLSocketFactory sslSocketFactory = createCustomSSLSocketFactory();
             SSLSocket sslSocket = (SSLSocket) sslSocketFactory.createSocket(host, port);
             sslSocket.startHandshake();
-            successCounter.incrementAndGet();
+            incrementAndGet();
             sslSocket.close();
         } catch (Exception e) {
             System.out.println("Connexion échouée.");
         }
+    }
+
+    public void incrementAndGet(){
+        successCounter.incrementAndGet();
     }
 }

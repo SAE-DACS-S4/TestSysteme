@@ -79,13 +79,13 @@ public class testSysteme {
 
     static Stream<Arguments> LogsSource() {
         return Stream.of(
-                Arguments.of("axelf", "123", 1),
-                Arguments.of("axelf", "1234", 0),
-                Arguments.of("axelf", "12345", 0),
                 Arguments.of("dimitric", "123", 1),
+                Arguments.of("dimitricopley", "123", 0),
+                Arguments.of("dimitric", "1234", 0),
                 Arguments.of("simonr", "123", 0)
         );
     }
+
     @ParameterizedTest
     @MethodSource("LogsSource")
     public void logInTest(String log, String password, int expected) throws InterruptedException {
