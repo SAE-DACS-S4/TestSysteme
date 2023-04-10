@@ -2,6 +2,7 @@ package test;
 
 import fr.umontpellier.ConnectTask;
 import fr.umontpellier.LoginTask;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,6 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class testSysteme {
 
+   static File tempFile;
+
     /**
      * Instanciation de l'image docker de l'application système.
      * La suite de Test suivante requiert que le docker soit installé sur la machine, et en cours d'exécution.
@@ -35,8 +38,7 @@ public class testSysteme {
             if (inputStream == null) {
                 throw new RuntimeException("docker-compose.yml not found in classpath resources");
             }
-            File tempFile = File.createTempFile("docker-compose", ".yml");
-            tempFile.deleteOnExit();
+            tempFile = File.createTempFile("docker-compose", ".yml");
             try (OutputStream outputStream = new FileOutputStream(tempFile)) {
                 byte[] buffer = new byte[1024];
                 int bytesRead;
@@ -53,7 +55,8 @@ public class testSysteme {
             Process process = processBuilder.start();
             process.waitFor();
             assertTrue(process.exitValue() == 0);
-            sleep(1000);
+            System.out.println("Docker image starting...");
+            sleep(2000);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -94,8 +97,24 @@ public class testSysteme {
         sleep(1000);
         assertEquals(expected, hasLoggedIn.get());
     }
+
+
+    @AfterAll
+    public static void tearDown() {
+        try {
+            System.out.println("Docker image stopping...");
+            ProcessBuilder processBuilder = new ProcessBuilder("docker-compose","-f", tempFile.getAbsolutePath(), "down");
+            processBuilder.inheritIO();
+            tempFile.deleteOnExit();
+            Process process = processBuilder.start();
+            process.waitFor();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }
 
 /*  Rappel :
-    Assurez-vous d'avoir Docker installé et en daemon sur votre machine avant d'éxucuter les tests.
+    Assurez-vous d'avoir Docker installé et en daemon sur votre machine avant d'éxecuter les tests.
 */
