@@ -1,8 +1,12 @@
 package test;
 
 import fr.umontpellier.ConnectTask;
+import fr.umontpellier.LoginTask;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,8 +16,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class testSysteme {
@@ -70,4 +76,26 @@ public class testSysteme {
         System.out.println("Elapsed time: " + elapsedTime + " ms");
     }
 
+
+    static Stream<Arguments> LogsSource() {
+        return Stream.of(
+                Arguments.of("axelf", "123", 1),
+                Arguments.of("axelf", "1234", 0),
+                Arguments.of("axelf", "12345", 0),
+                Arguments.of("dimitric", "123", 1),
+                Arguments.of("simonr", "123", 0)
+        );
+    }
+    @ParameterizedTest
+    @MethodSource("LogsSource")
+    public void logInTest(String log, String password, int expected) throws InterruptedException {
+        AtomicInteger hasLoggedIn = new AtomicInteger(0);
+        new LoginTask(log, password, hasLoggedIn).run();
+        sleep(1000);
+        assertEquals(expected, hasLoggedIn.get());
+    }
 }
+
+/*  Rappel :
+    Assurez-vous d'avoir Docker installé et en daemon sur votre machine avant d'éxucuter les tests.
+*/

@@ -21,7 +21,7 @@ public class ConnectTask implements Runnable {
         this.successCounter = successCounter;
     }
 
-    private SSLSocketFactory createCustomSSLSocketFactory() throws Exception {
+    SSLSocketFactory createCustomSSLSocketFactory() throws Exception {
         InputStream truststoreInputStream = ConnectTask.class.getResourceAsStream("/certificat/truststore.jks");
         if (truststoreInputStream == null) {
             throw new FileNotFoundException("Le fichier 'truststore.jks' est introuvable.");
@@ -45,7 +45,7 @@ public class ConnectTask implements Runnable {
             successCounter.incrementAndGet();
             sslSocket.close();
         } catch (Exception e) {
-            // Handle connection errors or failures here
+            System.out.println("Connexion échouée.");
         }
     }
 }
